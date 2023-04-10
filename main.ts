@@ -4,7 +4,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     attack("melee", null)
 })
-function attack (attackType: string, projectile: Sprite) {
+function attack(attackType: string, projectile: Sprite) {
     if (attackType == "melee") {
         slash = sprites.create(img`
             . . . . . . . . . . . . . . . .
@@ -29,14 +29,13 @@ function attack (attackType: string, projectile: Sprite) {
         pause(175)
         sprites.destroy(slash)
     } else {
-        //projectile.setPosition(player2.x, player2.y)
-        projectile.follow(enemy)
-        pause(1000)
-        sprites.destroy(projectile)
+        projectile.follow(enemies[randint(0,enemies.length)])
+        //pause(1000)
+        //sprites.destroy(projectile)
     }
 }
-function createEnemies (enemyType: Image) {
-    enemy = sprites.create(img`
+function createEnemies(enemyType: Image) {
+    let enemy = sprites.create(img`
         ........................
         ........................
         ........................
@@ -65,37 +64,29 @@ function createEnemies (enemyType: Image) {
     enemy.setPosition(175, 85)
     enemy.follow(player2, 10)
     enemies = sprites.allOfKind(SpriteKind.Enemy)
-    statusbar.attachToSprite(enemy)
+    //statusbar.attachToSprite(enemy)
+    return enemy
 }
 info.setLife(3)
-let enemy: Sprite = null
-let slash: Sprite = null
 let player2: Sprite = null
-let enemies: Sprite[] = []
-let statusbar: StatusBarSprite = null
-let shoot2 = null
-let shoot = null
-// game.onUpdateInterval(10000, function () {
-statusbar = statusbars.create(20, 4, 0)
-enemies = sprites.allOfKind(SpriteKind.Enemy)
 let bolts = [sprites.createProjectileFromSprite(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . 2 2 . . . . . . . 
-    . . . . . . 3 1 1 3 . . . . . . 
-    . . . . . 2 1 1 1 1 2 . . . . . 
-    . . . . . 2 1 1 1 1 2 . . . . . 
-    . . . . . . 3 1 1 3 . . . . . . 
-    . . . . . . . 2 2 . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `, player2, 50, 50), sprites.createProjectileFromSprite(img`
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . 2 2 . . . . . . .
+    . . . . . . 3 1 1 3 . . . . . .
+    . . . . . 2 1 1 1 1 2 . . . . .
+    . . . . . 2 1 1 1 1 2 . . . . .
+    . . . . . . 3 1 1 3 . . . . . .
+    . . . . . . . 2 2 . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+    . . . . . . . . . . . . . . . .
+`, player2, 50, 50), sprites.createProjectileFromSprite(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -190,18 +181,22 @@ let enemyImages = [img`
     . . f b b b b b b c f . . . . . 
     . . . f f f f f f f . . . . . . 
     `]
+let enemy = createEnemies(enemyImages[randint(0, enemyImages.length)])
+let slash: Sprite = null
+let enemies: Sprite[] = []
+//let statusbar = statusbars.create(20, 4, 0)
+enemies = sprites.allOfKind(SpriteKind.Enemy)
 tiles.setCurrentTilemap(tilemap`level1`)
 player2 = Render.getRenderSpriteInstance()
 player2.setPosition(232, 25)
 Render.setViewMode(ViewMode.tilemapView)
-createEnemies(enemyImages[randint(0, enemyImages.length)])
 Render.setAttribute(Render.attribute.dirX, 0)
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(sprite: Sprite, otherSprite: Sprite) {
-    info.changeLifeBy(1)
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
+    info.changeLifeBy(-1)
 })
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
-    
+    sprites.destroy(otherSprite)
 })
-statusbars.onZero(0, function(status: StatusBarSprite) {
-    sprites.destroy(statusbar.spriteAttachedTo(StatusBarSprite))
-})
+//statusbars.onZero(0, function(status: StatusBarSprite) {
+//    sprites.destroy(StatusBarSprite.spriteAttachedTo(statusbar))
+//})
