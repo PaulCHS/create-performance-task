@@ -25,21 +25,24 @@ function attack(attackType: string, projectile: Sprite) {
             . . . . . . . . . . . . . . . .
         `, SpriteKind.Projectile)
         slash.setPosition(player2.x, player2.y)
-        slash.follow(enemy)
+        slash.follow(randomEnemySprite)
         pause(175)
         sprites.destroy(slash)
     } else {
-        projectile.follow(enemies[randint(0,enemies.length)])
+        projectile.follow(enemies[randint(0, enemies.length)])
         pause(1000)
         sprites.destroy(projectile)
     }
 }
 let newEnemy = null
 function createEnemy(enemyType: Sprite) {
-    let newEnemy = enemyType
-    newEnemy.setPosition(enemyLocationsX[randint(0, enemyLocationsX.length)], enemyLocationsY[randint(0, enemyLocationsY.length)])
-    newEnemy.follow(player2, 10)
+    if (allEnemies.length < 6) {
+        newEnemy = enemyType
+        newEnemy.setPosition(enemyLocationsX[randint(0, enemyLocationsX.length)], enemyLocationsY[randint(0, enemyLocationsY.length)])
+        newEnemy.follow(player2, 10)
+    }
     enemies = sprites.allOfKind(SpriteKind.Enemy)
+    return enemies
 }
 info.setLife(3)
 let player2: Sprite = null
@@ -155,14 +158,21 @@ let enemyImages = [sprites.create(img`
         . f b b b b b b b b c f . . . .
         . . f b b b b b b c f . . . . .
         . . . f f f f f f f . . . . . .
-    `,SpriteKind.Enemy)]
-let enemyLocationsX = [175,24,0]
-let enemyLocationsY = [85,184,0]
-let enemy: Sprite = null
-for (let i = 0; i<7; i++) {
-    enemy = enemyImages[randint(0, enemyImages.length)]
-    createEnemy(enemy)
+    `, SpriteKind.Enemy)]
+let enemyLocationsX = [175, 24, 0]
+let enemyLocationsY = [85, 184, 0]
+let randomEnemySprite: Sprite = null
+let allEnemies = sprites.allOfKind(SpriteKind.Enemy)
+for (let i = 0; i<10; i++) {
+    randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
+    allEnemies = createEnemy(randomEnemySprite)
 }
+game.onUpdateInterval(5000, function() {
+    for (let i = 0; i<6; i++) {
+        randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
+        allEnemies = createEnemy(randomEnemySprite)
+    }
+})
 let slash: Sprite = null
 let enemies: Sprite[] = []
 let treasure = sprites.create(img`
