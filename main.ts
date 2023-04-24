@@ -4,26 +4,26 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     attack("melee", null)
 })
-function attack(attackType: string, projectile: Sprite) {
+function attack (attackType: string, projectile: Sprite) {
     if (attackType == "melee") {
         slash = sprites.create(img`
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . 1 1 . . . .
-            . . . . . . . . . 1 1 . . . . .
-            . . . . . . . . 1 1 . . . . . .
-            . . . . . . . . 1 . . . . . . .
-            . . . . . . . 1 . . . . . . . .
-            . . . . . . 1 1 . . . . . . . .
-            . . . . . . 1 . . . . . . . . .
-            . . . . . 1 . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-        `, SpriteKind.Projectile)
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . 1 1 . . . . 
+            . . . . . . . . . 1 1 . . . . . 
+            . . . . . . . . 1 1 . . . . . . 
+            . . . . . . . . 1 . . . . . . . 
+            . . . . . . . 1 . . . . . . . . 
+            . . . . . . 1 1 . . . . . . . . 
+            . . . . . . 1 . . . . . . . . . 
+            . . . . . 1 . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, SpriteKind.Projectile)
         slash.setPosition(player2.x, player2.y)
         slash.follow(randomEnemySprite)
         pause(175)
@@ -34,37 +34,74 @@ function attack(attackType: string, projectile: Sprite) {
         sprites.destroy(projectile)
     }
 }
-let newEnemy = null
-function createEnemy(enemyType: Sprite) {
+function createEnemy (enemyType: Sprite) {
     if (allEnemies.length < 6) {
         newEnemy = enemyType
-        newEnemy.setPosition(enemyLocationsX[randint(0, enemyLocationsX.length)], enemyLocationsY[randint(0, enemyLocationsY.length)])
+//        newEnemy.setPosition(enemyLocationsX[randint(0, enemyLocationsX.length)], enemyLocationsY[randint(0, enemyLocationsY.length)])
+        newEnemy.setPosition(175,85)
         newEnemy.follow(player2, 10)
     }
     enemies = sprites.allOfKind(SpriteKind.Enemy)
     return enemies
 }
-info.setLife(3)
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
+    treasure.setImage(img`
+        . b b b b b b b b b b b b b b . 
+        b e 4 4 4 4 4 4 4 4 4 4 4 4 4 b 
+        b e 4 4 4 4 4 4 4 4 4 4 4 4 e b 
+        b e e 4 4 4 4 4 4 4 4 4 4 e e b 
+        b b b b b b b d d b b b b b b b 
+        . b b b b b b c c b b b b b b . 
+        b c c c c c b c c b c c c c c b 
+        b c c c c c c b b c c c c c c b 
+        b c c c c c c c c c c c c c c b 
+        b c c c c c c c c c c c c c c b 
+        b b b b b b b b b b b b b b b b 
+        b e e e e e e e e e e e e e e b 
+        b e e e e e e e e e e e e e e b 
+        b c e e e e e e e e e e e e c b 
+        b b b b b b b b b b b b b b b b 
+        . b b . . . . . . . . . . b b . 
+        `)
+    pause(250)
+    game.gameOver(true)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    sprites.destroy(otherSprite)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeLifeBy(-1)
+})
+let newEnemy: Sprite = null
+let slash: Sprite = null
+let enemies: Sprite[] = []
+let treasure: Sprite = null
+let allEnemies: Sprite[] = []
+let randomEnemySprite: Sprite = null
+let enemyLocationsY: number[] = []
+let enemyLocationsX: number[] = []
 let player2: Sprite = null
-//These are two lists.
-let bolts = [sprites.createProjectileFromSprite(img`
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . 2 2 . . . . . . .
-    . . . . . . 3 1 1 3 . . . . . .
-    . . . . . 2 1 1 1 1 2 . . . . .
-    . . . . . 2 1 1 1 1 2 . . . . .
-    . . . . . . 3 1 1 3 . . . . . .
-    . . . . . . . 2 2 . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-    . . . . . . . . . . . . . . . .
-`, player2, 50, 50), sprites.createProjectileFromSprite(img`
+let bolts: Sprite[] = []
+info.setLife(3)
+// These are two lists.
+bolts = [sprites.createProjectileFromSprite(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . 2 2 . . . . . . . 
+    . . . . . . 3 1 1 3 . . . . . . 
+    . . . . . 2 1 1 1 1 2 . . . . . 
+    . . . . . 2 1 1 1 1 2 . . . . . 
+    . . . . . . 3 1 1 3 . . . . . . 
+    . . . . . . . 2 2 . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, player2, 50, 50), sprites.createProjectileFromSprite(img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . . . 
@@ -142,57 +179,49 @@ let enemyImages = [sprites.create(img`
     . . c b d d d d d 5 5 5 b b . . 
     . . . c c c c c c c c b b . . . 
     `, SpriteKind.Enemy), sprites.create(img`
-        . . f f f . . . . . . . . f f f
-        . f f c c . . . . . . f c b b c
-        f f c c . . . . . . f c b b c .
-        f c f c . . . . . . f b c c c .
-        f f f c c . c c . f c b b c c .
-        f f c 3 c c 3 c c f b c b b c .
-        f f b 3 b c 3 b c f b c c b c .
-        . c b b b b b b c b b c c c . .
-        . c 1 b b b 1 b b c c c c . . .
-        c b b b b b b b b b c c . . . .
-        c b c b b b c b b b b f . . . .
-        f b 1 f f f 1 b b b b f c . . .
-        f b b b b b b b b b b f c c . .
-        . f b b b b b b b b c f . . . .
-        . . f b b b b b b c f . . . . .
-        . . . f f f f f f f . . . . . .
+    . . f f f . . . . . . . . f f f 
+    . f f c c . . . . . . f c b b c 
+    f f c c . . . . . . f c b b c . 
+    f c f c . . . . . . f b c c c . 
+    f f f c c . c c . f c b b c c . 
+    f f c 3 c c 3 c c f b c b b c . 
+    f f b 3 b c 3 b c f b c c b c . 
+    . c b b b b b b c b b c c c . . 
+    . c 1 b b b 1 b b c c c c . . . 
+    c b b b b b b b b b c c . . . . 
+    c b c b b b c b b b b f . . . . 
+    f b 1 f f f 1 b b b b f c . . . 
+    f b b b b b b b b b b f c c . . 
+    . f b b b b b b b b c f . . . . 
+    . . f b b b b b b c f . . . . . 
+    . . . f f f f f f f . . . . . . 
     `, SpriteKind.Enemy)]
-let enemyLocationsX = [175, 24, 0]
-let enemyLocationsY = [85, 184, 0]
-let randomEnemySprite: Sprite = null
-let allEnemies = sprites.allOfKind(SpriteKind.Enemy)
-for (let i = 0; i<10; i++) {
+enemyLocationsX = [175, 24, 0]
+enemyLocationsY = [85, 184, 0]
+randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
+allEnemies = sprites.allOfKind(SpriteKind.Enemy)
+for (let index = 0; index < 10; index++) {
     randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
     allEnemies = createEnemy(randomEnemySprite)
 }
-game.onUpdateInterval(5000, function() {
-    for (let i = 0; i<6; i++) {
-        randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
-        allEnemies = createEnemy(randomEnemySprite)
-    }
-})
-let slash: Sprite = null
-let enemies: Sprite[] = []
-let treasure = sprites.create(img`
-    . . b b b b b b b b b b b b . .
-    . b e 4 4 4 4 4 4 4 4 4 4 e b .
-    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b
-    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b
-    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b
-    b e e 4 4 4 4 4 4 4 4 4 4 e e b
-    b e e e e e e e e e e e e e e b
-    b e e e e e e e e e e e e e e b
-    b b b b b b b d d b b b b b b b
-    c b b b b b b c c b b b b b b c
-    c c c c c c b c c b c c c c c c
-    b e e e e e c b b c e e e e e b
-    b e e e e e e e e e e e e e e b
-    b c e e e e e e e e e e e e c b
-    b b b b b b b b b b b b b b b b
-    . b b . . . . . . . . . . b b .
-`, SpriteKind.Player)
+treasure = sprites.create(img`
+    . . b b b b b b b b b b b b . . 
+    . b e 4 4 4 4 4 4 4 4 4 4 e b . 
+    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b 
+    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b 
+    b e 4 4 4 4 4 4 4 4 4 4 4 4 e b 
+    b e e 4 4 4 4 4 4 4 4 4 4 e e b 
+    b e e e e e e e e e e e e e e b 
+    b e e e e e e e e e e e e e e b 
+    b b b b b b b d d b b b b b b b 
+    c b b b b b b c c b b b b b b c 
+    c c c c c c b c c b c c c c c c 
+    b e e e e e c b b c e e e e e b 
+    b e e e e e e e e e e e e e e b 
+    b c e e e e e e e e e e e e c b 
+    b b b b b b b b b b b b b b b b 
+    . b b . . . . . . . . . . b b . 
+    `, SpriteKind.Player)
 treasure.setPosition(24, 184)
 enemies = sprites.allOfKind(SpriteKind.Enemy)
 tiles.setCurrentTilemap(tilemap`level1`)
@@ -200,31 +229,9 @@ player2 = Render.getRenderSpriteInstance()
 player2.setPosition(232, 25)
 Render.setViewMode(ViewMode.raycastingView)
 Render.setAttribute(Render.attribute.dirX, 0)
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
-    info.changeLifeBy(-1)
-})
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite: Sprite, otherSprite: Sprite) {
-    sprites.destroy(otherSprite)
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite: Sprite, otherSprite: Sprite) {
-    treasure.setImage(img`
-        . b b b b b b b b b b b b b b .
-        b e 4 4 4 4 4 4 4 4 4 4 4 4 4 b
-        b e 4 4 4 4 4 4 4 4 4 4 4 4 e b
-        b e e 4 4 4 4 4 4 4 4 4 4 e e b
-        b b b b b b b d d b b b b b b b
-        . b b b b b b c c b b b b b b .
-        b c c c c c b c c b c c c c c b
-        b c c c c c c b b c c c c c c b
-        b c c c c c c c c c c c c c c b
-        b c c c c c c c c c c c c c c b
-        b b b b b b b b b b b b b b b b
-        b e e e e e e e e e e e e e e b
-        b e e e e e e e e e e e e e e b
-        b c e e e e e e e e e e e e c b
-        b b b b b b b b b b b b b b b b
-        . b b . . . . . . . . . . b b .
-    `)
-    pause(250)
-    game.gameOver(true)
+game.onUpdateInterval(5000, function () {
+    for (let index = 0; index < 6; index++) {
+        randomEnemySprite = enemyImages[randint(0, enemyImages.length)]
+        allEnemies = createEnemy(randomEnemySprite)
+    }
 })
